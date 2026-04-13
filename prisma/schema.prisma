@@ -35,18 +35,20 @@ model Group {
 }
 
 model Task {
-  id        String    @id @default(cuid())
-  text      String
-  done      Boolean   @default(false)
-  priority  Priority  @default(MEDIUM)
-  category  String    @default("Pribadi")
-  deadline  DateTime?
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  groupId   String?
-  group     Group?    @relation(fields: [groupId], references: [id], onDelete: SetNull)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          String   @id @default(cuid())
+  text        String
+  done        Boolean  @default(false)
+  priority    String   @default("MEDIUM")   // ← Tambahkan ini
+  category    String   @default("Pribadi")
+  deadline    DateTime?
+  groupId     String?
+  userId      String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  group       Group?   @relation(fields: [groupId], references: [id])
+
+  @@map("tasks")
 }
 
 model Reflection {
