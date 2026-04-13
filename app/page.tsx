@@ -43,6 +43,9 @@ export default function LoginPage() {
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
+      
+      document.cookie = `user=${encodeURIComponent(JSON.stringify(data.user))}; path=/; max-age=86400`;
+      
       router.replace("/dashboard");
     } catch (error) {
       console.error("Auth error:", error);

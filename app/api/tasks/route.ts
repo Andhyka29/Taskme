@@ -21,8 +21,9 @@ export async function GET(request: Request) {
         text: true,
         done: true,
         priority: true,
-        deadline: true,
         category: true,
+        deadline: true,
+        groupId: true,
         createdAt: true,
       },
     });
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { text, userId, priority, deadline, category } = body;
+    const { text, userId, priority, category, deadline, groupId } = body;
 
     if (!text || !userId) {
       return NextResponse.json(
@@ -54,16 +55,18 @@ export async function POST(request: Request) {
         text: text.trim(),
         userId,
         priority: priority || "MEDIUM",
-        deadline: deadline ? new Date(deadline) : null,
         category: category || "Pribadi",
+        deadline: deadline ? new Date(deadline) : null,
+        groupId: groupId || null,
       },
       select: {
         id: true,
         text: true,
         done: true,
         priority: true,
-        deadline: true,
         category: true,
+        deadline: true,
+        groupId: true,
         createdAt: true,
       },
     });
@@ -81,25 +84,30 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { taskId, done } = body;
+    const { taskId, done, groupId } = body;
 
-    if (taskId === undefined || done === undefined) {
+    if (taskId === undefined) {
       return NextResponse.json(
-        { error: "Task ID dan status diperlukan" },
+        { error: "Task ID diperlukan" },
         { status: 400 }
       );
     }
 
+    const updateData: { done?: boolean; groupId?: string | null } = {};
+    if (done !== undefined) updateData.done = done;
+    if (groupId !== undefined) updateData.groupId = groupId;
+
     const task = await prisma.task.update({
       where: { id: taskId },
-      data: { done },
+      data: updateData,
       select: {
         id: true,
         text: true,
         done: true,
         priority: true,
-        deadline: true,
         category: true,
+        deadline: true,
+        groupId: true,
         createdAt: true,
       },
     });

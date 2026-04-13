@@ -12,6 +12,7 @@ model User {
   name        String       @unique
   password    String
   tasks       Task[]
+  groups      Group[]
   reflections Reflection[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -23,15 +24,27 @@ enum Priority {
   HIGH
 }
 
+model Group {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks     Task[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Task {
   id        String    @id @default(cuid())
   text      String
   done      Boolean   @default(false)
   priority  Priority  @default(MEDIUM)
-  deadline  DateTime?
   category  String    @default("Pribadi")
+  deadline  DateTime?
   userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupId   String?
+  group     Group?    @relation(fields: [groupId], references: [id], onDelete: SetNull)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -46,4 +59,3 @@ model Reflection {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
